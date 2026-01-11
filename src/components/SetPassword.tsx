@@ -4,10 +4,9 @@ import type { SetPasswordFormData } from '../types/auth';
 interface SetPasswordProps {
   onBack: () => void;
   onSubmit: (data: SetPasswordFormData) => void;
-  email: string;
 }
 
-const SetPassword: React.FC<SetPasswordProps> = ({ onBack, onSubmit, email }) => {
+const SetPassword: React.FC<SetPasswordProps> = ({ onBack, onSubmit }) => {
   const [formData, setFormData] = useState<SetPasswordFormData>({
     newPassword: '',
     confirmPassword: '',
