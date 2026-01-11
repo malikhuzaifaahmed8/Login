@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Login from '../components/Login';
 import ForgotEmail from '../components/ForgotEmail';
 import VerifyCode from '../components/VerifyCode';
+import SetPassword from '../components/SetPassword';
+import Success from '../components/Success';
+import ProgressBar from '../components/ProgressBar';
 import type {
   AuthStep,
   LoginFormData,
   ForgotEmailFormData,
   VerifyCodeFormData,
+  SetPasswordFormData,
 } from '../types/auth';
 
 const Auth: React.FC = () => {
@@ -44,11 +48,17 @@ const Auth: React.FC = () => {
 
   const handleVerifyCodeSubmit = (data: VerifyCodeFormData) => {
     console.log('Verification code:', data.code.join(''));
-    alert(`Code ${data.code.join('')} submitted successfully!`);
-    // Reset to login after successful verification
-    setTimeout(() => {
-      goToStep('login', 'left');
-    }, 1000);
+    goToStep('setPassword', 'right');
+  };
+
+  const handleSetPasswordSubmit = (data: SetPasswordFormData) => {
+    console.log('New password set');
+    goToStep('success', 'right');
+  };
+
+  const handleSuccessLogin = () => {
+    alert('Logged in successfully!');
+    goToStep('login', 'left');
   };
 
   const handleBackFromForgot = () => {
@@ -59,12 +69,19 @@ const Auth: React.FC = () => {
     goToStep('forgotEmail', 'left');
   };
 
-const collageImages = Array.from({ length: 9 }, (_, i) => ({
-  id: i + 1,
-  src: `/images/img (${i + 1}).jpg`,
-  alt: `Student ${i + 1}`,
-}));
+  const handleBackFromSetPassword = () => {
+    goToStep('verifyCode', 'left');
+  };
 
+  const handleBackFromSuccess = () => {
+    goToStep('setPassword', 'left');
+  };
+
+  const collageImages = Array.from({ length: 9 }, (_, i) => ({
+    id: i + 1,
+    src: `/images/img (${i + 1}).jpg`,
+    alt: `Student ${i + 1}`,
+  }));
 
   const getAnimationClass = (step: AuthStep) => {
     if (step !== currentStep) return '';
@@ -73,6 +90,11 @@ const collageImages = Array.from({ length: 9 }, (_, i) => ({
     }
     return 'active';
   };
+
+  const shouldShowProgressBar = currentStep === 'forgotEmail' || 
+                               currentStep === 'verifyCode' || 
+                               currentStep === 'setPassword' || 
+                               currentStep === 'success';
 
   return (
     <main className="page-wrapper">
@@ -83,7 +105,7 @@ const collageImages = Array.from({ length: 9 }, (_, i) => ({
         <div className="branding-container">
           <div className="logo-outer">
             <div className="logo-inner">
-         <img src="/images/logo.png" alt="EduMake Logo" />
+              <img src="/images/logo.png" alt="EduMake Logo" />
             </div>
           </div>
 
@@ -117,6 +139,8 @@ const collageImages = Array.from({ length: 9 }, (_, i) => ({
       {/* Right Form Panel */}
       <section className="form-panel">
         <div className="form-card">
+          {shouldShowProgressBar && <ProgressBar currentStep={currentStep} />}
+          
           <div className="form-content">
             {/* Login Step */}
             <div className={`form-step-wrapper ${currentStep === 'login' ? getAnimationClass('login') : ''}`}>
@@ -150,15 +174,32 @@ const collageImages = Array.from({ length: 9 }, (_, i) => ({
                 />
               )}
             </div>
+
+            {/* Set Password Step */}
+            <div className={`form-step-wrapper ${currentStep === 'setPassword' ? getAnimationClass('setPassword') : ''}`}>
+              {currentStep === 'setPassword' && (
+                <SetPassword
+                  onBack={handleBackFromSetPassword}
+                  onSubmit={handleSetPasswordSubmit}
+                  email={email}
+                />
+              )}
+            </div>
+
+            {/* Success Step */}
+            <div className={`form-step-wrapper ${currentStep === 'success' ? getAnimationClass('success') : ''}`}>
+              {currentStep === 'success' && (
+                <Success
+                  onLogin={handleSuccessLogin}
+                  email={email}
+                />
+              )}
+            </div>
           </div>
 
           <footer className="bottom-support">
-            {/* <img
-              src="https://cdn-icons-png.flaticon.com/512/542/542689.png"
-              width="14"
-              alt="Mail"
-            /> */}
-            {/* support@edumake.com */}
+            <img src="https://cdn-icons-png.flaticon.com/512/542/542689.png" width="14" alt="Mail" />
+            support@edumake.com
           </footer>
         </div>
       </section>

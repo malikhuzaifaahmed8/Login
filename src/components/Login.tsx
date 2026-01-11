@@ -7,58 +7,54 @@ interface LoginProps {
 }
 
 const Login: React.FC<LoginProps> = ({ onForgotPassword, onLogin }) => {
-  const [formData, setFormData] = useState<LoginFormData>({
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onLogin(formData);
   };
-
-  const handleInputChange =
-    (field: keyof LoginFormData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value =
-        field === 'rememberMe' ? e.target.checked : e.target.value;
-
-      setFormData((prev) => ({
-        ...prev,
-        [field]: value,
-      }));
-    };
 
   return (
     <div className="form-step">
       <header className="form-header">
         <h2>Sign In</h2>
-        <p>Welcome back! Please enter your details to log in your account.</p>
+        <p>Welcome back! Please enter your details to log in to your account.</p>
       </header>
 
       <form onSubmit={handleSubmit} className="form-content">
         <div className="input-field">
           <label htmlFor="email">Email</label>
           <input
-            id="email"
             type="email"
-            placeholder="Enter your email"
+            id="email"
+            name="email"
             value={formData.email}
-            onChange={handleInputChange('email')}
-            required
+            onChange={handleChange}
+            placeholder="Enter your email"
           />
         </div>
 
         <div className="input-field">
           <label htmlFor="password">Password</label>
           <input
-            id="password"
             type="password"
-            placeholder="Enter your password"
+            id="password"
+            name="password"
             value={formData.password}
-            onChange={handleInputChange('password')}
-            required
+            onChange={handleChange}
+            placeholder="Enter your password"
           />
         </div>
 
@@ -66,18 +62,18 @@ const Login: React.FC<LoginProps> = ({ onForgotPassword, onLogin }) => {
           <label className="remember">
             <input
               type="checkbox"
+              name="rememberMe"
               checked={formData.rememberMe}
-              onChange={handleInputChange('rememberMe')}
+              onChange={handleChange}
             />
-            Remember for 30 days
+            <span>Remember for 30 days</span>
           </label>
-
-          <button
-            type="button"
+          <button 
+            type="button" 
             className="forgot-link"
             onClick={onForgotPassword}
           >
-            Forgot password?
+            Forgot password
           </button>
         </div>
 
@@ -91,31 +87,26 @@ const Login: React.FC<LoginProps> = ({ onForgotPassword, onLogin }) => {
 
         <div className="social-links">
           <button type="button" className="s-btn">
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt="Google"
-            />
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google" />
           </button>
-
           <button type="button" className="s-btn">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
-              alt="Facebook"
-            />
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" />
           </button>
-
           <button type="button" className="s-btn">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg"
-              alt="Apple"
-            />
+            <img src="https://cdn-icons-png.flaticon.com/512/732/732221.png" alt="Apple" />
           </button>
         </div>
 
-        <p className="signup-prompt">
+        <div className="signup-prompt">
           Don&apos;t have an account?{' '}
-          <span style={{ color: 'var(--brand-blue)' }}>Sign up</span>
-        </p>
+          <button 
+            type="button" 
+            className="forgot-link"
+            style={{ marginLeft: '4px' }}
+          >
+            Sign up
+          </button>
+        </div>
       </form>
     </div>
   );

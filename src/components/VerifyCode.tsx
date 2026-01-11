@@ -9,10 +9,11 @@ interface VerifyCodeProps {
 
 const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
+  const [error, setError] = useState('');
+  const [attempts, setAttempts] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    // Initialize refs array
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
 
@@ -21,18 +22,19 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
   }, []);
 
   const handleChange = (index: number, value: string) => {
+    // Clear any existing error
+    setError('');
+    
     // Allow only numbers
     const numericValue = value.replace(/\D/g, '');
     
     if (!numericValue) {
-      // Clear the field if empty
       const newCode = [...code];
       newCode[index] = '';
       setCode(newCode);
       return;
     }
 
-    // Handle paste or multiple digits
     if (numericValue.length > 1) {
       const digits = numericValue.split('').slice(0, 6);
       const newCode = [...code];
@@ -45,7 +47,6 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
       
       setCode(newCode);
       
-      // Focus the next empty field or the last one
       const nextIndex = Math.min(index + digits.length, 5);
       setTimeout(() => {
         inputRefs.current[nextIndex]?.focus();
@@ -53,12 +54,10 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
       return;
     }
 
-    // Single digit input
     const newCode = [...code];
     newCode[index] = numericValue;
     setCode(newCode);
 
-    
     if (numericValue && index < 5) {
       setTimeout(() => {
         inputRefs.current[index + 1]?.focus();
@@ -69,15 +68,11 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Backspace') {
       if (!code[index] && index > 0) {
-   
         inputRefs.current[index - 1]?.focus();
-        
-
         const newCode = [...code];
         newCode[index - 1] = '';
         setCode(newCode);
       } else if (code[index]) {
-    
         const newCode = [...code];
         newCode[index] = '';
         setCode(newCode);
@@ -92,15 +87,34 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const codeString = code.join('');
-    if (codeString.length === 6) {
+    
+    if (codeString.length !== 6) {
+      setError('Please enter all 6 digits of the verification code');
+      return;
+    }
+
+    // Simulate verification - in real app, this would be an API call
+    // For demo: code "123456" is correct, anything else is wrong
+    if (codeString === '123456') {
+      setError('');
       onSubmit({ code });
     } else {
-      alert('Please enter all 6 digits of the verification code');
+      setError('Invalid verification code. Please try again.');
+      setAttempts(prev => prev + 1);
+      
+      // Clear inputs after 3 failed attempts
+      if (attempts >= 2) {
+        setCode(Array(6).fill(''));
+        inputRefs.current[0]?.focus();
+        setError('Too many failed attempts. Please request a new code.');
+      }
     }
   };
 
   const handleResend = () => {
     setCode(Array(6).fill(''));
+    setError('');
+    setAttempts(0);
     inputRefs.current[0]?.focus();
     alert(`New verification code sent to ${email}`);
   };
@@ -133,9 +147,22 @@ const VerifyCode: React.FC<VerifyCodeProps> = ({ onBack, onSubmit, email }) => {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onFocus={(e) => e.target.select()}
+              style={error ? { borderColor: '#DC2626' } : {}}
             />
           ))}
         </div>
+
+        {error && (
+          <div className="error-message" style={{
+            color: '#DC2626',
+            fontSize: '0.875rem',
+            textAlign: 'center',
+            marginBottom: '1rem',
+            minHeight: '20px'
+          }}>
+            {error}
+          </div>
+        )}
 
         <button type="submit" className="btn-primary">
           Verify Code

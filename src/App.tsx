@@ -1,4 +1,4 @@
-import React from 'react';
+// src/App.tsx
 import Auth from './pages/Auth';
 import './styles/auth.css';
 

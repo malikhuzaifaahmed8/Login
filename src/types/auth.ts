@@ -1,4 +1,10 @@
-export type AuthStep = 'login' | 'forgotEmail' | 'verifyCode';
+// src/types/auth.ts
+export type AuthStep =
+  | 'login'
+  | 'forgotEmail'
+  | 'verifyCode'
+  | 'setPassword'
+  | 'success';
 
 export interface LoginFormData {
   email: string;
@@ -14,9 +20,7 @@ export interface VerifyCodeFormData {
   code: string[];
 }
 
-export interface AuthContextProps {
-  currentStep: AuthStep;
-  goToStep: (step: AuthStep) => void;
-  email: string;
-  setEmail: (email: string) => void;
+export interface SetPasswordFormData {
+  newPassword: string;
+  confirmPassword: string;
 }
