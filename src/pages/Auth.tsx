@@ -31,9 +31,9 @@ const Auth: React.FC = () => {
     }, 300);
   };
 
-  const handleLogin = (_data: LoginFormData) => {
-    console.log('Login attempt:', _data);
-    alert(`Mock login with email: ${_data.email}`);
+  const handleLogin = (data: LoginFormData) => {
+    console.log('Login attempt:', data);
+    alert(`Mock login with email: ${data.email}`);
   };
 
   const handleForgotPassword = () => {
@@ -51,7 +51,7 @@ const Auth: React.FC = () => {
     goToStep('setPassword', 'right');
   };
 
-  const handleSetPasswordSubmit = (_data: SetPasswordFormData) => {
+  const handleSetPasswordSubmit = (data: SetPasswordFormData) => {
     console.log('New password set');
     goToStep('success', 'right');
   };
@@ -71,10 +71,6 @@ const Auth: React.FC = () => {
 
   const handleBackFromSetPassword = () => {
     goToStep('verifyCode', 'left');
-  };
-
-  const handleBackFromSuccess = () => {
-    goToStep('setPassword', 'left');
   };
 
   const collageImages = Array.from({ length: 9 }, (_, i) => ({
